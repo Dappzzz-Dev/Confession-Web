@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Buat Kamu 💕</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & ROOT ──────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  --rose-50:  #fff1f4;
+  --rose-100: #ffe0e8;
+  --rose-200: #ffb8cc;
+  --rose-300: #ff8aaa;
+  --rose-400: #ff5585;
+  --rose-500: #f72c6b;
+  --rose-600: #d91558;
+  --rose-700: #b01049;
+  --blush:    #ffe4ed;
+  --cream:    #fff8fa;
+  --ink:      #2c0f1c;
+  --mist:     #8b4163;
+  --ghost:    #d49ab0;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --shadow-sm:  0 2px 12px rgba(215, 20, 90, .12);
+  --shadow-md:  0 6px 28px rgba(215, 20, 90, .18);
+  --shadow-lg:  0 14px 52px rgba(215, 20, 90, .24);
+  --radius-card: 26px;
+  --radius-btn:  50px;
+}
+
+html, body {
+  height: 100%; overflow: hidden;
+  font-family: var(--font-body);
+  background: var(--cream);
+}
+
+/* ─── AMBIENT BACKGROUND ────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(255,180,210,.45) 0%, transparent 65%),
+    radial-gradient(ellipse 70% 70% at 80% 90%, rgba(255,140,185,.35) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,228,237,.6) 0%, transparent 80%),
+    var(--cream);
+  z-index: -2;
+}
+
+/* Subtle noise texture */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+  pointer-events: none; z-index: -1;
+  opacity: .5;
+}
+
+/* ─── FLOATING BG PETALS ───────────────────────── */
+.bg-layer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.petal {
+  position: absolute; opacity: 0; font-size: 1rem;
+  animation: petalDrift linear infinite;
+  will-change: transform, opacity;
+}
+@keyframes petalDrift {
+  0%   { transform: translateY(110vh) rotate(-30deg) scale(.7); opacity: 0; }
+  6%   { opacity: .4; }
+  94%  { opacity: .25; }
+  100% { transform: translateY(-8vh) rotate(30deg) scale(1.1); opacity: 0; }
+}
+
+/* ─── HEART TRAIL CANVAS ────────────────────────── */
+#trail {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 9000;
+}
+
+/* ─── PAGE SYSTEM ───────────────────────────────── */
+.page {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 20px 16px;
+  opacity: 0; pointer-events: none;
+  transform: translateY(28px) scale(.975);
+  transition: opacity .65s cubic-bezier(.4,0,.2,1),
+              transform .65s cubic-bezier(.4,0,.2,1);
+  z-index: 10; gap: 14px;
+  overflow-y: auto;
+}
+.page.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+
+/* ─── GLASS CARD ────────────────────────────────── */
+.glass {
+  background: rgba(255,255,255,.68);
+  backdrop-filter: blur(22px) saturate(1.4);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  border: 1px solid rgba(255,185,215,.5);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-md), 0 1px 0 rgba(255,255,255,.9) inset;
+  padding: 38px 30px;
+  text-align: center;
+  width: 100%; max-width: 410px;
+}
+
+/* ─── BUTTON ─────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 14px 36px;
+  border: none; border-radius: var(--radius-btn);
+  font-family: var(--font-body); font-weight: 700; font-size: .97rem;
+  cursor: pointer; outline: none; user-select: none;
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+.btn-rose {
+  background: linear-gradient(140deg, var(--rose-400) 0%, var(--rose-600) 100%);
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(215,21,88,.42), 0 1px 0 rgba(255,255,255,.25) inset;
+}
+.btn-rose:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(215,21,88,.52); }
+.btn-rose:active { transform: scale(.96); }
+
+/* ═══════════════════════════════════════════════════
+   PAGE 1 — WELCOME
+═══════════════════════════════════════════════════ */
+.badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--rose-400), var(--rose-600));
+  color: #fff; font-size: .68rem; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  padding: 5px 18px; border-radius: 50px;
+  margin-bottom: 20px;
+}
+
+.welcome-icon {
+  display: block; font-size: 4rem; margin-bottom: 16px;
+  animation: wobble 3.5s ease-in-out infinite;
+}
+@keyframes wobble {
+  0%,100% { transform: rotate(-4deg) scale(1); }
+  25%     { transform: rotate(4deg) scale(1.08); }
+  50%     { transform: rotate(-2deg) scale(1); }
+  75%     { transform: rotate(3deg) scale(1.05); }
+}
+
+.welcome-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 5.5vw, 2.3rem);
+  font-weight: 700; color: var(--ink); line-height: 1.28;
+  margin-bottom: 10px;
+}
+.welcome-title em { color: var(--rose-600); font-style: italic; }
+
+.welcome-body {
+  color: var(--mist); font-size: .93rem; line-height: 1.7;
+  margin-bottom: 14px;
+}
+
+.welcome-note {
+  display: inline-block;
+  background: var(--rose-50); border: 1px solid var(--rose-100);
+  border-radius: 14px; padding: 10px 18px;
+  color: var(--mist); font-size: .82rem; font-weight: 500;
+  line-height: 1.5; margin-bottom: 26px;
+}
+
+/* ═══════════════════════════════════════════════════
+   PAGE 2 — SLOT MACHINE
+═══════════════════════════════════════════════════ */
+.game-heading {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 4.5vw, 1.75rem);
+  font-weight: 700; color: var(--ink); text-align: center;
+}
+.game-sub {
+  color: var(--ghost); font-size: .83rem; text-align: center; margin-top: -6px;
+}
+
+/* MACHINE BODY */
+.slot-machine {
+  width: min(340px, 94vw);
+  background: rgba(255,255,255,.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 2px solid rgba(255,160,200,.5);
+  border-radius: 28px;
+  padding: 20px 18px 18px;
+  box-shadow: var(--shadow-lg),
+              0 1px 0 rgba(255,255,255,.95) inset,
+              0 -1px 0 rgba(215,21,88,.08) inset;
+  position: relative; overflow: hidden;
+}
+
+/* decorative top strip */
+.slot-strip {
+  text-align: center;
+  font-weight: 700; font-size: .72rem; letter-spacing: 3px;
+  color: var(--rose-500); text-transform: uppercase;
+  padding-bottom: 12px; margin-bottom: 14px;
+  border-bottom: 1.5px dashed var(--rose-100);
+  position: relative;
+}
+.slot-strip::before, .slot-strip::after {
+  content: '❤';
+  color: var(--rose-300); font-size: .85rem;
+  vertical-align: middle; margin: 0 8px;
+}
+
+/* REELS */
+.reels {
+  display: flex; gap: 10px; justify-content: center;
+  margin-bottom: 16px; position: relative;
+}
+
+.reel {
+  flex: 1; max-width: 86px; aspect-ratio: 1;
+  background: white; border-radius: 18px;
+  border: 2px solid var(--rose-200);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  box-shadow: 0 3px 10px rgba(215,21,88,.1), 0 1px 0 rgba(255,255,255,.9) inset;
+  transition: border-color .3s, box-shadow .3s;
+}
+.reel.lit {
+  border-color: var(--rose-400);
+  box-shadow: 0 0 0 3px rgba(247,44,107,.18), 0 3px 10px rgba(215,21,88,.2);
+}
+
+.reel-face {
+  font-size: clamp(2rem, 8.5vw, 2.6rem);
+  line-height: 1; user-select: none;
+  transition: transform .06s ease;
+}
+
+/* shimmer overlay on reels when spinning */
+.reel.spinning::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,.5) 0%, transparent 40%, transparent 60%, rgba(255,255,255,.5) 100%);
+  pointer-events: none;
+}
+
+/* Win celebration line */
+.win-bar {
+  position: absolute; top: 50%; left: 0; right: 0;
+  height: 4px; background: linear-gradient(90deg, transparent, var(--rose-400), var(--rose-500), var(--rose-400), transparent);
+  transform: translateY(-50%); opacity: 0;
+  border-radius: 2px; pointer-events: none;
+  transition: opacity .4s;
+}
+.reels.jackpot .win-bar { opacity: 1; }
+
+/* SLOT CONTROLS */
+.spin-btn {
+  width: 100%; padding: 15px;
+  background: linear-gradient(140deg, var(--rose-400), var(--rose-700));
+  color: #fff; border: none; border-radius: 50px;
+  font-family: var(--font-body); font-weight: 700; font-size: 1rem;
+  cursor: pointer; letter-spacing: .4px;
+  box-shadow: 0 4px 16px rgba(215,21,88,.44);
+  transition: all .2s;
+}
+.spin-btn:active { transform: scale(.96); }
+.spin-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+.slot-msg {
+  text-align: center; color: var(--mist);
+  font-size: .85rem; font-weight: 500;
+  min-height: 20px; margin-top: 8px;
+  transition: color .3s;
+}
+
+.spin-counter {
+  text-align: center; font-size: 1.1rem;
+  letter-spacing: 5px; min-height: 22px;
+  margin-top: 4px;
+}
+
+/* WIN OVERLAY inside machine */
+.slot-win {
+  position: absolute; inset: 0; border-radius: 26px;
+  background: rgba(255,246,251,.97);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 6px; z-index: 20; text-align: center; padding: 20px;
+}
+.slot-win.show { display: flex; animation: popBounce .5s cubic-bezier(.34,1.56,.64,1); }
+@keyframes popBounce {
+  from { transform: scale(.72); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+.win-big { font-size: 3.8rem; animation: bobbing .6s ease-in-out infinite alternate; }
+@keyframes bobbing { to { transform: translateY(-14px) rotate(8deg); } }
+.win-title {
+  font-family: var(--font-display); font-size: 1.4rem;
+  font-weight: 700; color: var(--ink);
+}
+.win-caption { color: var(--ghost); font-size: .83rem; margin-bottom: 4px; }
+
+/* ═══════════════════════════════════════════════════
+   PAGE 3 — THE QUESTION
+═══════════════════════════════════════════════════ */
+.q-heart {
+  display: block; font-size: 4rem; margin-bottom: 16px;
+  animation: heartpump 1.8s ease-in-out infinite;
+}
+@keyframes heartpump {
+  0%,100% { transform: scale(1); }
+  14%     { transform: scale(1.2); }
+  30%     { transform: scale(1); }
+  46%     { transform: scale(1.13); }
+  60%     { transform: scale(1); }
+}
+
+.q-title {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  color: var(--ink); line-height: 1.3; margin-bottom: 8px;
+}
+.q-caption { color: var(--ghost); font-size: .87rem; margin-bottom: 30px; }
+
+#btn-yes {
+  display: block; width: 100%; padding: 16px;
+  background: linear-gradient(140deg, var(--rose-400), var(--rose-700));
+  color: #fff; border: none; border-radius: 50px;
+  font-family: var(--font-body); font-weight: 700; font-size: 1.05rem;
+  cursor: pointer; margin-bottom: 10px;
+  box-shadow: 0 6px 24px rgba(215,21,88,.46);
+  transition: all .25s;
+}
+#btn-yes:hover  { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(215,21,88,.56); }
+#btn-yes:active { transform: scale(.97); }
+
+#btn-no {
+  position: fixed;
+  padding: 10px 22px;
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #ccc; border: 1.5px solid #ebebeb;
+  border-radius: 50px;
+  font-family: var(--font-body); font-weight: 600; font-size: .88rem;
+  cursor: pointer; z-index: 500; display: none; white-space: nowrap;
+  transition: left .3s cubic-bezier(.34,1.4,.64,1),
+              top  .3s cubic-bezier(.34,1.4,.64,1),
+              font-size .3s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+}
+
+/* ═══════════════════════════════════════════════════
+   PAGE 4 — GREETING CARD
+═══════════════════════════════════════════════════ */
+.card-title {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(1.5rem, 5vw, 2.1rem);
+  color: var(--ink); text-align: center;
+}
+.card-sub { color: var(--ghost); font-size: .83rem; text-align: center; margin-top: -6px; }
+
+.card-scene {
+  perspective: 900px; cursor: pointer;
+  width: min(370px, 93vw);
+}
+
+.card-3d {
+  width: 100%;
+  height: min(230px, 50vw); min-height: 192px;
+  position: relative;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transition: transform 1.15s cubic-bezier(.4,0,.15,1);
+  border-radius: 22px;
+}
+.card-3d.open { transform: rotateY(180deg); }
+
+.card-face {
+  position: absolute; inset: 0; border-radius: 22px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 26px 30px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.card-front {
+  background: linear-gradient(145deg, var(--rose-400), var(--rose-700));
+  box-shadow: var(--shadow-lg);
+}
+.card-front .cf-ico { font-size: 3.2rem; margin-bottom: 10px; animation: wobble 2.5s ease-in-out infinite; }
+.card-front p { color: rgba(255,255,255,.9); font-size: .88rem; font-weight: 500; }
+
+.card-back {
+  background: white; transform: rotateY(180deg);
+  box-shadow: var(--shadow-lg); border: 2px solid var(--rose-100);
+  text-align: center; overflow: hidden;
+}
+.card-back::before {
+  content: '';
+  position: absolute; top: -20px; right: -20px;
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(255,100,150,.12), transparent 70%);
+  border-radius: 50%;
+}
+
+.card-msg {
+  font-family: var(--font-display);
+  font-style: italic; font-weight: 400;
+  color: var(--ink); font-size: clamp(.74rem, 2vw, .9rem);
+  line-height: 2; position: relative; z-index: 1;
+}
+
+.card-corner {
+  position: absolute; bottom: 14px; right: 16px;
+  font-size: 1.3rem; animation: pulse 2.2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.25); } }
+
+.card-hint {
+  color: var(--ghost); font-size: .8rem; text-align: center;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ─── CONFETTI ───────────────────────────────────── */
+.confetti-layer {
+  position: fixed; inset: 0; overflow: hidden;
+  pointer-events: none; z-index: 9500;
+}
+.cp {
+  position: absolute;
+  animation: cfDrop linear both;
+  animation-fill-mode: backwards;
+}
+@keyframes cfDrop {
+  0%   { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(900deg); opacity: 0; }
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────── */
+@media (max-height: 650px) {
+  .glass { padding: 24px 20px; }
+  .welcome-icon { font-size: 3rem; margin-bottom: 10px; }
+  .q-heart { font-size: 3rem; }
+  .reel { max-width: 70px; }
+  .reel-face { font-size: 1.8rem; }
+  .slot-machine { padding: 14px 14px 14px; }
+}
+@media (min-width: 500px) {
+  .reel { max-width: 96px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="trail"></canvas>
+<div class="bg-layer" id="petals"></div>
+<div class="confetti-layer" id="confLayer"></div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 1 · WELCOME
+══════════════════════════════════════════════ -->
+<section class="page active" id="p-welcome">
+  <div class="glass">
+    <span class="badge">✿ spesial buat kamu ✿</span>
+    <span class="welcome-icon">🍵</span>
+    <h1 class="welcome-title">
+      Heyy, welcome<br><em>matcha depan</em>ku!
+    </h1>
+    <p class="welcome-body">
+      Seneng banget kamu mau mampir ke sini 🥺<br>
+      Ada satu hal penting yang pengen banget aku sampaikan...<br>
+      tapi nggak bisa gratis gitu aja ya~
+    </p>
+    <div class="welcome-note">
+      Ada "syarat kecil" dulu nih sebelum lanjut 😏<br>
+      <span style="font-size:.76rem;opacity:.75">(tenang, ga susah kok. <em>paling</em>. hehe)</span>
+    </div>
+    <button class="btn btn-rose" onclick="goTo('p-game')">
+      Yuk, aku siap! 🎮
+    </button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 2 · SLOT MACHINE
+══════════════════════════════════════════════ -->
+<section class="page" id="p-game">
+  <div class="game-heading">Mesin Cintax</div>
+  <p class="game-sub">Putar sampai dapet 💕 💕 💕 baru bisa lanjut~</p>
+
+  <div class="slot-machine">
+    <!-- Win overlay -->
+    <div class="slot-win" id="slotWin">
+      <div class="win-big">🎉</div>
+      <div class="win-title">Jackpot!!! 💕</div>
+      <div class="win-caption">Kamu akhirnya berhasil dapetin tiga hati~</div>
+      <button class="btn btn-rose" style="font-size:.88rem;padding:12px 28px;margin-top:4px"
+              onclick="goTo('p-question')">
+        Lanjut ke pertanyaan penting ✨
+      </button>
+    </div>
+
+    <div class="slot-strip">Lucky Love Machine</div>
+
+    <div class="reels" id="reels">
+      <div class="reel" id="reel0"><span class="reel-face" id="rf0">💕</span></div>
+      <div class="reel" id="reel1"><span class="reel-face" id="rf1">💔</span></div>
+      <div class="reel" id="reel2"><span class="reel-face" id="rf2">🥀</span></div>
+      <div class="win-bar" id="winBar"></div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="spin-btn" id="spinBtn" onclick="spin()">Yokk Putar!</button>
+      <div class="slot-msg" id="slotMsg">Tekan putar dan lihat keberuntunganmu~ 🍀</div>
+      <div class="spin-counter" id="spinCounter"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 3 · THE QUESTION
+══════════════════════════════════════════════ -->
+<section class="page" id="p-question">
+  <div class="glass">
+    <span class="q-heart">💝</span>
+    <h1 class="q-title">Maukah kamu menjadi pacarku?</h1>
+    <p class="q-caption">pikir dulu baik-baik... tapi ga lama-lama ya 🥺</p>
+    <button id="btn-yes" onclick="goTo('p-card')">Ya, aku mau! 💕</button>
+  </div>
+  <button id="btn-no">Tidak, biarkan aku sendiri</button>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 4 · GREETING CARD
+══════════════════════════════════════════════ -->
+<section class="page" id="p-card">
+  <div class="card-title">Yeayyy!!! 🎉</div>
+  <p class="card-sub">makasih udah mau yaa~ 🥹</p>
+
+  <div class="card-scene" onclick="openCard()">
+    <div class="card-3d" id="card3d">
+      <div class="card-face card-front">
+        <div class="cf-ico">💌</div>
+        <p>Ketuk untuk membuka~</p>
+      </div>
+      <div class="card-face card-back">
+        <p class="card-msg">
+          makasii wes nompo yoo..<br><br>
+          lak nompo ne ora kepekso ta?<br>
+          mugo wae ora yoo, hehe.<br><br>
+          suwun nggeh.<br>
+          ngapunten nek aneh carane.<br><br>
+          iki wes bener bener daden yakk. 🌸
+        </p>
+        <div class="card-corner">💕</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="card-hint" id="cardHint">Klik / tap kartu untuk membuka 🎀</p>
+</section>
+
+<script>
+/* ══════════════════════════════════════════════
+   FLOATING PETALS
+══════════════════════════════════════════════ */
+const PETAL_SET = ['💕','💗','💓','🌸','✨','💖','🌷','💫','🍵'];
+const petalWrap = document.getElementById('petals');
+for (let i = 0; i < 22; i++) {
+  const el = document.createElement('span');
+  el.className = 'petal';
+  el.textContent = PETAL_SET[Math.floor(Math.random() * PETAL_SET.length)];
+  Object.assign(el.style, {
+    left: `${Math.random() * 100}%`,
+    fontSize: `${(Math.random() * 1.1 + .55).toFixed(1)}rem`,
+    animationDuration: `${(Math.random() * 11 + 7).toFixed(1)}s`,
+    animationDelay: `${(Math.random() * 14).toFixed(1)}s`,
+  });
+  petalWrap.appendChild(el);
+}
+
+/* ══════════════════════════════════════════════
+   HEART CURSOR TRAIL
+══════════════════════════════════════════════ */
+const canvas = document.getElementById('trail');
+const ctx    = canvas.getContext('2d');
+let   hearts = [];
+
+function resizeCanvas() { canvas.width = innerWidth; canvas.height = innerHeight; }
+resizeCanvas();
+addEventListener('resize', resizeCanvas);
+
+function spawnHeart(x, y) {
+  hearts.push({
+    x, y,
+    sz: Math.random() * 10 + 7,
+    vx: (Math.random() - .5) * 2.4,
+    vy: -(Math.random() * 2.6 + 1.2),
+    a:  .85,
+    da: Math.random() * .022 + .012,
+    h:  Math.random() * 30 + 315,
+  });
+}
+
+function drawHeart(x, y, s, a, hue) {
+  ctx.save();
+  ctx.globalAlpha = a;
+  ctx.fillStyle = `hsl(${hue},88%,67%)`;
+  const r = s * .5;
+  ctx.beginPath();
+  ctx.moveTo(x, y + r * .55);
+  ctx.bezierCurveTo(x, y, x - r, y, x - r, y - r * .32);
+  ctx.bezierCurveTo(x - r, y - r * .88, x, y - r * .68, x, y - r * .32);
+  ctx.bezierCurveTo(x, y - r * .68, x + r, y - r * .88, x + r, y - r * .32);
+  ctx.bezierCurveTo(x + r, y, x, y, x, y + r * .55);
+  ctx.fill();
+  ctx.restore();
+}
+
+(function trailLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  hearts = hearts.filter(p => p.a > .02);
+  hearts.forEach(p => {
+    drawHeart(p.x, p.y, p.sz, p.a, p.h);
+    p.x += p.vx; p.y += p.vy; p.a -= p.da;
+  });
+  requestAnimationFrame(trailLoop);
+})();
+
+let lx = 0, ly = 0;
+document.addEventListener('mousemove', e => {
+  if ((e.clientX-lx)**2 + (e.clientY-ly)**2 > 90) {
+    spawnHeart(e.clientX, e.clientY);
+    lx = e.clientX; ly = e.clientY;
+  }
+});
+
+let lastTouch = 0;
+document.addEventListener('touchmove', e => {
+  const now = Date.now();
+  if (now - lastTouch < 40) return;
+  lastTouch = now;
+  [...e.touches].forEach(t => spawnHeart(t.clientX, t.clientY));
+}, { passive: true });
+document.addEventListener('touchstart', e => {
+  [...e.touches].forEach(t => spawnHeart(t.clientX, t.clientY));
+}, { passive: true });
+
+/* ══════════════════════════════════════════════
+   PAGE NAVIGATION
+══════════════════════════════════════════════ */
+function goTo(id) {
+  const cur = document.querySelector('.page.active');
+  if (cur) {
+    cur.style.opacity = '0';
+    cur.style.transform = 'translateY(-24px) scale(.975)';
+    setTimeout(() => { cur.classList.remove('active'); cur.style.cssText = ''; }, 620);
+  }
+  if (id !== 'p-question') document.getElementById('btn-no').style.display = 'none';
+  setTimeout(() => {
+    const nxt = document.getElementById(id);
+    nxt.classList.add('active');
+    if (id === 'p-question') setTimeout(initQuestion, 460);
+    if (id === 'p-card')     setTimeout(initCard, 300);
+  }, 340);
+}
+
+/* ══════════════════════════════════════════════
+   SLOT MACHINE
+══════════════════════════════════════════════ */
+const EMOJIS   = ['💕','💗','💓','🌸','✨','🎀','💖','🍃','⭐','🎵'];
+const WIN_SYM  = '💕';
+const NEAR_END = ['🌸','✨','🎀','🍃','⭐']; // non-heart for miss
+const WIN_PROBS = [.30, .52, .74, 1.0];       // increases each fail
+
+let spins      = 0;
+let spinning   = false;
+let spinHistory = [];
+
+const spinBtn  = document.getElementById('spinBtn');
+const slotMsg  = document.getElementById('slotMsg');
+const spinCtr  = document.getElementById('spinCounter');
+const reelsFx  = document.getElementById('reels');
+
+const MESSAGES = [
+  '😅 Yaahh hampir!! Dua hati tapi yang ketiga kabur~',
+  '😤 HAMPIR BANGET!! Satu lagi pasti bisa!',
+  '💪 Ayooo fokus! Hati ketiga pasti ketangkep kok!',
+  '🍵 Ayo yang ini pasti jadi... percaya deh~',
+  '😂 Sabar ya sabar... sebentar lagi nih!',
+];
+
+function getOutcome() {
+  const p = WIN_PROBS[Math.min(spins, WIN_PROBS.length - 1)];
+  if (Math.random() < p) return [WIN_SYM, WIN_SYM, WIN_SYM];
+  // Near-miss: 2 hearts, last one escapes
+  return [WIN_SYM, WIN_SYM, NEAR_END[Math.floor(Math.random() * NEAR_END.length)]];
+}
+
+function animateReel(idx, durationMs, finalEmoji, onDone) {
+  const face = document.getElementById('rf' + idx);
+  const win  = document.getElementById('reel' + idx);
+  win.classList.add('spinning');
+
+  let elapsed = 0;
+  const iv = setInterval(() => {
+    const rnd = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+    face.textContent = rnd;
+    face.style.transform = `scale(${.72 + Math.random() * .56})`;
+    elapsed += 90;
+    if (elapsed >= durationMs) {
+      clearInterval(iv);
+      face.textContent = finalEmoji;
+      face.style.transform = 'scale(1)';
+      win.classList.remove('spinning');
+      if (finalEmoji === WIN_SYM) win.classList.add('lit');
+      onDone && onDone();
+    }
+  }, 90);
+}
+
+function spin() {
+  if (spinning) return;
+  spinning = true;
+  spinBtn.disabled = true;
+  // Remove previous lit state
+  [0,1,2].forEach(i => document.getElementById('reel'+i).classList.remove('lit'));
+  reelsFx.classList.remove('jackpot');
+  slotMsg.textContent = '🎰 Sedang berputar...';
+
+  const result = getOutcome();
+  const isWin  = result.every(r => r === WIN_SYM);
+
+  // Staggered stops: 1.15s, 1.85s, 2.55s
+  animateReel(0, 1150, result[0], null);
+  animateReel(1, 1850, result[1], null);
+  animateReel(2, 2550, result[2], () => {
+    if (isWin) {
+      reelsFx.classList.add('jackpot');
+      slotMsg.textContent = '🎉 JACKPOT! Tiga hati!!!';
+      slotMsg.style.color = 'var(--rose-500)';
+      launchConfetti();
+      setTimeout(() => document.getElementById('slotWin').classList.add('show'), 750);
+    } else {
+      spins++;
+      spinHistory.push('💔');
+      spinCtr.textContent = spinHistory.join(' ');
+      slotMsg.textContent = MESSAGES[Math.min(spins - 1, MESSAGES.length - 1)];
+      slotMsg.style.color = '';
+      setTimeout(() => { spinning = false; spinBtn.disabled = false; }, 350);
+    }
+  });
+}
+
+/* ══════════════════════════════════════════════
+   QUESTION — RUNAWAY BUTTON
+══════════════════════════════════════════════ */
+function initQuestion() {
+  const no  = document.getElementById('btn-no');
+  const yes = document.getElementById('btn-yes');
+
+  no.style.display   = 'block';
+  no.style.fontSize  = '.88rem';
+  no.textContent     = 'Tidak, biarkan aku sendiri';
+
+  // Place below yes
+  const yr = yes.getBoundingClientRect();
+  no.style.left = `${Math.max(10, (innerWidth - no.offsetWidth) / 2)}px`;
+  no.style.top  = `${Math.min(yr.bottom + 22, innerHeight - no.offsetHeight - 20)}px`;
+
+  let escapes = 0;
+  const funnyLabels = [
+    'Tidak, biarkan aku sendiri',
+    'Jangan klik aku!!',
+    'LARI~~~',
+    'Ga ada opsi lain cyinn~',
+    'Salah tombol wkwkwk',
+    'HEHE~~~',
+    'Udah deh... pencet "Ya" aja 😆',
+    'Aku ga mau diklik!!',
+  ];
+
+  function flee(e) {
+    if (e?.cancelable) e.preventDefault();
+    escapes++;
+    const m  = 14;
+    const bw = no.offsetWidth + 8;
+    const bh = no.offsetHeight + 8;
+    let nx, ny, tries = 0;
+    do {
+      nx = m + Math.random() * (innerWidth  - bw - m * 2);
+      ny = m + Math.random() * (innerHeight - bh - m * 2);
+      tries++;
+    } while (tries < 12 &&
+      Math.abs(nx - parseFloat(no.style.left||0)) < 90 &&
+      Math.abs(ny - parseFloat(no.style.top ||0)) < 80);
+
+    no.style.left = nx + 'px';
+    no.style.top  = ny + 'px';
+    no.style.fontSize = `${Math.max(.62, .88 - escapes * .038)}rem`;
+    no.textContent = funnyLabels[Math.min(escapes, funnyLabels.length - 1)];
+  }
+
+  no.addEventListener('mouseover', flee);
+  no.addEventListener('touchstart', flee, { passive: false });
+}
+
+/* ══════════════════════════════════════════════
+   GREETING CARD
+══════════════════════════════════════════════ */
+let cardOpened = false;
+
+function initCard() {
+  cardOpened = false;
+  document.getElementById('card3d').classList.remove('open');
+  document.getElementById('cardHint').style.display = 'block';
+  launchConfetti();
+}
+
+function openCard() {
+  if (cardOpened) return;
+  cardOpened = true;
+  document.getElementById('card3d').classList.add('open');
+  document.getElementById('cardHint').style.display = 'none';
+  setTimeout(launchConfetti, 600);
+}
+
+/* ══════════════════════════════════════════════
+   CONFETTI
+══════════════════════════════════════════════ */
+function launchConfetti() {
+  const wrap = document.getElementById('confLayer');
+  wrap.innerHTML = '';
+  const items = ['💕','🌸','✨','💗','🎀','💖','⭐','🌷','💫','🍵'];
+  for (let i = 0; i < 42; i++) {
+    const el = document.createElement('span');
+    el.className = 'cp';
+    el.textContent = items[Math.floor(Math.random() * items.length)];
+    const dur = (Math.random() * 2.8 + 2.2).toFixed(1);
+    const del = (Math.random() * 2.5).toFixed(1);
+    Object.assign(el.style, {
+      left: `${Math.random() * 100}%`,
+      fontSize: `${(Math.random() * .9 + .6).toFixed(1)}rem`,
+      animationDuration: `${dur}s`,
+      animationDelay: `${del}s`,
+    });
+    wrap.appendChild(el);
+  }
+}
+</script>
+</body>
+</html>
